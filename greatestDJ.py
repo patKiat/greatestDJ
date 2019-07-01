@@ -16,7 +16,6 @@ from scipy.io.wavfile import read
 import soundfile as sf
 import pyloudnorm as pyln
 from crosscorrelation import pearson_def
-from boxcounting import count_range_in_list
 
 def rms(segmentedAudio): 
     rms = segmentedAudio.rms
@@ -72,13 +71,7 @@ def segment(channel, file_name):
     segment_time = total_time/no_segment #in ms
     start = 0
     i = 0
-    
-#    a = 9627015
-#    l = np.array(channel.get_array_of_samples())
-#    while a < len(l):
-#        print(l[a])
-#        a += 1
-    x = []
+
     peak_dB = []
     dr = []
     vu = []
@@ -95,9 +88,8 @@ def segment(channel, file_name):
         start = end
         
 #        print('rms', rms(segmentedAudio))
-#        peak_dB.append(PPM(segmentedAudio))
-#        x.append(i)
-#        dr.append(dynamicRange(segmentedAudio))
+        peak_dB.append(PPM(segmentedAudio))
+        dr.append(dynamicRange(segmentedAudio))
         loudness_dBFS = segmentedAudio.dBFS
         vu.append(loudness_dBFS)
     print('vu', vu)
@@ -121,10 +113,8 @@ def segment2(left_channel, right_channel):
         segmentedL = left_channel[start:end] #ms
         segmentedR = right_channel[start:end] #ms
 #        print('count',count)
-#        print(panning(segmentedL, segmentedR))
-        print(pearson_def(segmentedL, segmentedR))
-#        print(count_range_in_list(segmentedL))
-#        print(count_range_in_list(segmentedR))
+        print(panning(segmentedL, segmentedR))
+#        print(pearson_def(segmentedL, segmentedR))
         start = end
         count += 1
 
@@ -138,23 +128,6 @@ def main():
     split_sound = sound.split_to_mono()
     left_channel = split_sound[0]
     right_channel = split_sound[1]
-    
-    
-#    rate, signal = read(fullfilename) #read file    
-#    channel1 = signal[:,0] # L
-#    channel2 = signal[:,1] # R
-#    left_channel = AudioSegment(
-#        channel1.tobytes(), 
-#        frame_rate=rate,
-#        sample_width=channel1.dtype.itemsize, 
-#        channels=1
-#    )
-#    right_channel = AudioSegment(
-#        channel2.tobytes(), 
-#        frame_rate=rate,
-#        sample_width=channel2.dtype.itemsize, 
-#        channels=2
-#    )
     
 #    segment(left_channel, file_name) # by time
 #    segment(right_channel, file_name)

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from pydub import AudioSegment
 import math
+from scipy.io import wavfile
 
 def removeDuplicates(listofElements):
     
@@ -33,36 +34,45 @@ def difference(a, b): # a > b
    
 
 #
-files_path = 'music/'
-file_name = 'Friendzone1'
-file_type = '.mp3'
+files_path = ''
+file_name = 'norm'
+file_type = '.wav'
 fullfilename = files_path + file_name + file_type
-sound = AudioSegment.from_file(fullfilename) #also read file
-# stereo signal to two mono signal for left and right channel
-split_sound = sound.split_to_mono()
-left_channel = np.array(split_sound[0].get_array_of_samples())
-right_channel = np.array(split_sound[1].get_array_of_samples())
 
-#ratioX = difference(max(left_channel), min(left_channel))/20 
-#ratioY = difference(max(right_channel), min(right_channel))/20
+a, sound = wavfile.read("music/norm.wav")
+sound = np.round(sound*20)
+left_channel = sound[:,0]
+right_channel = sound[:,1]
+#for i in sound:
+#    print(i)
 
-ratioX = 1822.2
-ratioY = 1671.35
+#sound = AudioSegment.from_file(fullfilename) #also read file
+## stereo signal to two mono signal for left and right channel
+#split_sound = sound.split_to_mono()
+#left_channel = np.array(split_sound[0].get_array_of_samples())
+#right_channel = np.array(split_sound[1].get_array_of_samples())
+
+ratioX = difference(max(left_channel), min(left_channel))/20 
+ratioY = difference(max(right_channel), min(right_channel))/20
 
 startX = min(left_channel)
 scale = 20
 count_per_scale = []
+strX = []
+strY =[]
 pair = removeDuplicates(list(zip(left_channel, right_channel)))
 for x in range(scale):
     print('startX',startX)
+    strX.append(startX)
     startY = min(right_channel)
     endX = startX + ratioX
     if x == (scale-1):
         endX = max(left_channel)
     print('endX',endX)
-    for y in range(scale):
+    for y in range(5):
         print('-----------------------')
         print('startY',startY)
+        strY.append(startY)
         endY = startY + ratioY
         if y == (scale-1):
             endY = max(right_channel)
@@ -92,59 +102,33 @@ for x in range(scale):
     startX = endX
     print('===============================')
 
-print('c',count)
-print('pair', len(pair))
-print('lmin',min(left_channel))
-print('lmax',max(left_channel))
-print('rmin',min(right_channel))
-print('rmax',max(right_channel))
-print('ratioX',ratioX)
-print('ratioY',ratioY)
-print(count_per_scale)
-print(len(count_per_scale))
 
+#print('lmin',min(left_channel))
+#print('lmax',max(left_channel))
+#print('rmin',min(right_channel))
+#print('rmax',max(right_channel))
+#print('ratioX',ratioX)
+#print('ratioY',ratioY)
+#print(len(count_per_scale))
+#print('pair', len(pair))
+#print(sum(count_per_scale))
+
+print(count_per_scale)
 counti = 0
 for i in count_per_scale:
     if(i > 0):
         counti += 1
 
-print(counti)
-
-#print(list(zip(left_channel, right_channel)))
-#print(removeDuplicates(list(zip(left_channel, right_channel))))
+print('No. of box that has value =', counti)
 
 
-#print(sound)
-
-#for i in left_channel:
-#    print(i)
-    
-#i =  0 # 3963
-#while i < len(sound):
-##    print(left_channel[i])
-#    print(right_channel[i])
-#    i += 1
-
-#twod = np.column_stack((left_channel, right_channel))
-#print(twod)
-#left_channel = [-2,-2,-2,0,1,-2.6,6.3,6.5]
-#right_channel = [-3.1,-3,-3,0,-1,-1.7,2.3,3]
-
-#print(list(zip(left_channel, right_channel)))
-#print([i for i in zip(left_channel, right_channel)])
-#
-#i = 0
-#for l,r in zip(left_channel, right_channel):
-#    print(l,r)
-    
-#    i +=1
-#    if (i == 20):
-#        break
-#rng = np.random.RandomState(0)
-#colors = rng.rand(2351)
-#sizes = 3
-#plt.scatter(left_channel, right_channel, c=colors, s=sizes, alpha=0.3, cmap='viridis')
-#plt.title('Scatter plot pythonspot.com')
-#plt.xlabel('x')
-#plt.ylabel('y')
-#plt.show()
+## Plot graph
+rng = np.random.RandomState(0)
+colors = rng.rand(2351)
+sizes = 5
+#plt.figure(figsize=(15,10))
+plt.scatter(left_channel, right_channel, c=colors, s=sizes, alpha=1, cmap='viridis')
+plt.title('Scatter plot channel')
+plt.xlabel('L')
+plt.ylabel('R')
+plt.show()
