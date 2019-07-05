@@ -17,8 +17,7 @@ Run
    call funtion in another python script crosscorrelation.py 
 
 2. crosscorrelation.py is called by greatestDJ.py
-3. boxcounting.py 
-- You need to run separately.
+3. boxcounting.py is called by greatestDJ.py
 
 
 	
